@@ -1,17 +1,12 @@
 import os
-import wget
-from zipfile import ZipFile
 import logging
+from zipfile import ZipFile
 
+import utils
+from .defines import AVAILABLE_MODELS
 
 class UpdateController:
     def __init__(self):
-        self.available_models = dict({
-            'combo_1': 'https://sho-me.ru/media/amk/downloads/database/archive/sho-me-combo-1-db.zip',
-            'combo_1_a7': 'https://speedcam.online/rd.online/shome/combo_database.zip',
-            'combo_1_signature (lexus)': 'https://.speedcamoninle/rshomed.online//shome3/combo_database.zip',
-        })
-
         self.model = None
         self.update_zip_archive = None
         self._exe_filename = 'data_base_update.exe'
@@ -22,7 +17,11 @@ class UpdateController:
         if not self.__check_emptiness():
             self.__print_message_and_exit('Убедитесь, что флешка отформатирована и попробуйте снова.')
 
-        self.update_zip_archive = self.__download_update(out=os.getcwd())
+        self.update_zip_archive = utils.download_udpate_with_message(
+            url=AVAILABLE_MODELS.get(),
+            out=os.getcwd(),
+            msg='Скачивание обновления баз данных: ',
+        )
 
         if not self.__extract_update(os.getcwd()):
             # TODO: properly handle the exception.
@@ -32,12 +31,6 @@ class UpdateController:
             self.update_zip_archive = None
 
         self.__print_message_and_exit('Обновление успешно скачаны !')
-
-    def __download_update(self, out: str) -> str:
-        LOGGER.info('Скачивание обновления баз данных: ')
-        update_zip = wget.download(url=self.available_models['combo_1_a7'], out=out)
-        print('\n')  # wget.download does not add '\n'.
-        return update_zip
 
     def __extract_update(self, out: str) -> bool:
         with ZipFile(self.update_zip_archive, 'r') as archive:
@@ -72,15 +65,15 @@ class UpdateController:
     def __choice_model(self) -> None:
         print('-- Поддерживаемые модели регистраторов:\n')
 
-        for idx, model in enumerate(self.available_models):
-            if (idx + 1) == len(self.available_models):
+        for idx, model in enumerate(AVAILABLE_MODELS):
+            if (idx + 1) == len(AVAILABLE_MODELS):
                 print(f'{idx + 1}. {model}\n')
             else:
                 print(f'{idx + 1}. {model}')
 
         while self.model is None:
-            self.model = self.available_models.get(
-                list(self.available_models.keys())[
+            self.model = AVAILABLE_MODELS.get(
+                list(AVAILABLE_MODELS.keys())[
                     int(input('-- Введите порядковый номер, соответствующий вашей модели и нажмите "Enter": ')) - 1
                 ]
             )
