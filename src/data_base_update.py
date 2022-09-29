@@ -20,7 +20,7 @@ class UpdateController:
                 "Убедитесь, что флешка отформатирована и попробуйте снова."
             )
 
-        self.update_zip_archive = utils.download_udpate_with_message(
+        self.update_zip_archive = utils.download_file_with_message(
             url=AVAILABLE_MODELS.get(),
             out=os.getcwd(),
             msg="Скачивание обновления баз данных: ",
