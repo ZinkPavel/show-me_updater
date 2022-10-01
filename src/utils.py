@@ -1,7 +1,7 @@
 import logging
 import wget
 
-from .defines import AVAILABLE_MODELS
+from defines import AVAILABLE_MODELS
 
 global logger
 logging.basicConfig(
