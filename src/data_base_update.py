@@ -5,7 +5,6 @@ import sys
 from zipfile import ZipFile
 
 import utils
-from defines import AVAILABLE_MODELS
 
 
 class UpdateController:
