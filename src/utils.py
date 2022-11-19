@@ -1,28 +1,34 @@
-import logging
-import wget
+import os
+import shutil
+import sys
+from zipfile import ZipFile
+
+EXE_FILENAME = "update.exe"
 
 
-global logger
-logging.basicConfig(
-    format="%(message)s",
-    level=logging.INFO,
-)
-logger = logging.getLogger(__name__)
+def print_message_and_exit(message) -> None:
+    input()
+    sys.exit(0)
 
 
-def download_file_with_message(
-    url: str = None,
-    out: str = None,
-    msg: str = None,
-) -> str:
-    if not url:
-        raise (RuntimeError('Incorrect argument "url". Try again.'))
+def flash_card_is_empty() -> bool:
+    list_of_files = os.listdir(os.getcwd())
+    if len(list_of_files) > 1:
+        print("Флешка не отформатирована. Хотите отформатировать ?\n")
+        print("1. Да.")
+        print("2. Нет.")
+        if int(input("\nВведите цифру, подтверждающую выбор и нажмите Enter: ")) == 1:
+            list_of_files.remove(EXE_FILENAME)
+            map(
+                lambda f: shutil.rmtree(f) if os.path.isdir(f) else os.remove(),
+                list_of_files,
+            )
+        else:
+            return False
+    return True
 
-    if not out:
-        raise (RuntimeError('Incorrect argument "out". Try again.'))
 
-    logger.info(msg or "")
-    file_path = wget.download(url=url, out=out)
-    logger.info("")
-
-    return file_path
+def extract_archive(archive: str, outdir: str):
+    with ZipFile(archive, "r") as a:
+        archive_content = a.infolist()
+        a.extractall(out)
